@@ -46,33 +46,7 @@
 
 개발부터 배포, 서비스 운영까지의 전체 흐름을 나타내는 아키텍처 다이어그램입니다.
 
-```mermaid
-graph TD
-
-    subgraph CICD
-        A[개발자] -->|1. Git Push| B[GitHub 저장소]
-        B -->|2. 트리거| C{GitHub Actions}
-
-        subgraph 파이프라인
-            C -->|3. 빌드| D[.jar 생성]
-            D -->|4. 배포| E[EC2로 전송]
-        end
-    end
-
-    subgraph AWS
-        F[EC2] -->|DB 연결| G[RDS MySQL]
-    end
-
-    E -->|SSH| F
-
-    subgraph 사용자
-        I[사용자] -->|API 요청| F
-    end
-
-    style F fill:#FF9900,stroke:#333,stroke-width:2px
-    style G fill:#0073BB,stroke:#333,stroke-width:2px
-```
-
+```mermaid graph TD subgraph 사용자 영역 A[🧑 사용자] end subgraph 백엔드 서버 [Spring Boot 서버] B1[🔐 AuthController<br/>JWT 로그인/회원가입] B2[📦 ApiController<br/>가격 조회 요청] B3[📝 PostController<br/>커뮤니티 요청] B4[⚙️ JwtFilter & SecurityConfig] end subgraph 서비스 레이어 C1[🔑 AuthService] C2[📊 ProductService<br/>+ ApiService] C3[🧾 PostService] end subgraph 외부 시스템 D1[(공공데이터 API)] D2[(MySQL - AWS RDS)] D3[(Redis Cache)] D4[(S3 or 이미지 호스팅 - 선택사항)] end subgraph 인프라 E1[AWS EC2 (배포 서버)] E2[GitHub Actions (CI/CD)] end %% 사용자 → 서버 요청 흐름 A -->|로그인/회원가입| B1 --> C1 --> D2 A -->|도매가격 조회| B2 --> C2 -->|캐시 확인| D3 C2 -->|미캐시 시 호출| D1 --> D3 --> C2 A -->|게시판 요청| B3 --> C3 --> D2 %% 보안 흐름 B1 --> B4 B2 --> B4 B3 --> B4 %% 배포 흐름 E2 --> E1 --> B1 E1 --> B2 E1 --> B3 %% 데이터 저장/조회 흐름 C1 --> D2 C3 --> D2 ```
 </details>
 
 ## 6. 문제 해결 및 개선 경험
