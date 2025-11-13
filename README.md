@@ -47,43 +47,42 @@
 전체 시스템 아키텍처 다이어
 
 ```mermaid
-graph TD
-  A[🧑 사용자]
+graph LR
 
-  subgraph Spring Boot 서버
-    B1[인증 API]
-    B2[가격 API]
-    B3[커뮤니티 API]
+  subgraph 사용자
+    A[🧑 사용자]
   end
 
-  subgraph 서비스
-    C1[AuthService]
-    C2[ProductService]
-    C3[PostService]
+  subgraph 인프라 [인프라 - 🗄️AWS EC2]
+    E2[GitHub Actions]
+    
+    subgraph 서버 [Spring Boot 서버]
+      B1[인증 API]
+      B2[가격 API]
+      B3[커뮤니티 API]
+    end
+
+    subgraph 서비스
+      C1[AuthService]
+      C2[ProductService]
+      C3[PostService]
+    end
   end
 
   subgraph 외부 시스템
     D1[(공공데이터 API)]
     D2[(MySQL RDS)]
-    D3[(Redis)]
+    D3[(Redis Cache)]
   end
 
-  subgraph 인프라
-    E1[AWS EC2]
-    E2[CI/CD - GitHub Actions]
-  end
-
-  %% 요청 흐름
+  %% 사용자 요청
   A -->|로그인| B1 --> C1 --> D2
-  A -->|가격조회| B2 --> C2 --> D3
-  C2 -->|캐시 미스| D1 --> D3
-
+  A -->|가격 조회| B2 --> C2 --> D3
+  C2 -->|캐시 미스 시| D1 --> D3
   A -->|게시판| B3 --> C3 --> D2
 
   %% 배포 흐름
-  E2 --> E1 --> B1
-  E1 --> B2
-  E1 --> B3
+  E2 --> 서버
 ```
 
 </details>
