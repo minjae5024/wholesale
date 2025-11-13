@@ -18,7 +18,7 @@
         <a href="/" class="text-xl font-bold text-green-600 flex items-center"><i class="fas fa-seedling mr-2"></i><span>마켓 프라이스</span></a>
         <nav class="hidden md:flex flex-grow justify-center items-center space-x-8">
             <a href="/" class="text-gray-500 hover:text-green-600 transition duration-300">도매가격</a>
-            <a href="/community.html" class="text-gray-800 hover:text-green-600 transition duration-300 font-semibold border-b-2 border-green-500 pb-1">커뮤니티</a>
+            <a href="/community" class="text-gray-800 hover:text-green-600 transition duration-300 font-semibold border-b-2 border-green-500 pb-1">커뮤니티</a>
         </nav>
         <div id="user-info" class="hidden items-center space-x-4">
             <span id="username-display" class="font-semibold text-gray-700"></span>
@@ -46,7 +46,7 @@
                 <textarea id="post-content" name="content" rows="12" placeholder="내용을 입력하세요" required maxlength="500" class="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500"></textarea>
             </div>
             <div class="flex justify-end gap-4">
-                <a href="/community.html" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">취소</a>
+                <a href="/community" class="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors">취소</a>
                 <button type="submit" class="px-6 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">등록</button>
             </div>
         </form>
@@ -65,7 +65,7 @@
         const token = localStorage.getItem('jwt-token');
         if (!token) {
             alert('로그인이 필요한 기능입니다.');
-            window.location.href = '/login.html';
+            window.location.href = '/login';
             return;
         }
 
@@ -127,7 +127,7 @@
 
                 if (response.ok) {
                     alert('게시글이 성공적으로 등록되었습니다.');
-                    window.location.href = '/community.html';
+                    window.location.href = '/community';
                 } else {
                     const errorMsg = await response.text();
                     alert(`등록 실패: ${errorMsg}`);

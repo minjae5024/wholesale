@@ -8,6 +8,7 @@ import minjae5024.marketPrice.entity.ProductCode;
 import minjae5024.marketPrice.repository.MarketRepository;
 import minjae5024.marketPrice.repository.ProductCodeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -24,6 +25,11 @@ public class ProductService {
     private final ProductCodeRepository productCodeRepository;
     private final ApiService apiService;
 
+    @Cacheable(
+            cacheNames = "products",
+            key = "T(java.lang.String).format('%s|%s|%s|%s', #marketId, (#category == null ? 'ALL' : #category), (#productName == null ? '' : #productName), (#date == null ? T(java.time.LocalDate).now().format(T(java.time.format.DateTimeFormatter).ofPattern('yyyyMMdd')) : #date.replace('-', '')))",
+            unless = "#result == null || #result.isEmpty()"
+    )
     public List<PriceItemDto> getProducts(Long marketId, String category, String productName, String date) {
         Optional<Market> marketOptional = marketRepository.findById(marketId);
         if (marketOptional.isEmpty()) {
@@ -75,4 +81,5 @@ public class ProductService {
                 response.getResultData().getResult() != null && response.getResultData().getResult().getCode().equals("INFO-000") &&
                 response.getResultData().getRow() != null;
     }
+
 }

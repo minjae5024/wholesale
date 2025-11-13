@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -31,7 +31,7 @@
     </form>
     <p id="message" class="text-center text-sm text-red-500"></p>
     <div class="text-center">
-        <a href="/register.html" class="font-medium text-sm text-green-600 hover:text-green-500">계정이 없으신가요? 회원가입</a>
+        <a href="/register" class="font-medium text-sm text-green-600 hover:text-green-500">계정이 없으신가요? 회원가입</a>
     </div>
 </div>
 
@@ -41,7 +41,7 @@
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const messageEl = document.getElementById('message');
-        messageEl.textContent = ''; // 이전 메시지 초기화
+        messageEl.textContent = '';
 
         try {
             const response = await fetch('/api/auth/login', {
@@ -53,10 +53,10 @@
             const responseBody = await response.text();
 
             if (response.ok) {
-                // 성공 시 Bearer 접두사를 포함한 토큰을 localStorage에 저장
+
                 localStorage.setItem('jwt-token', responseBody);
                 alert('로그인에 성공했습니다!');
-                window.location.href = '/'; // 메인 페이지로 이동
+                window.location.href = '/';
             } else {
                 messageEl.textContent = responseBody || '아이디 또는 비밀번호를 확인해주세요.';
             }

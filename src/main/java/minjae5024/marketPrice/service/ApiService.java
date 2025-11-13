@@ -10,9 +10,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.StringJoiner;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class ApiService {
 

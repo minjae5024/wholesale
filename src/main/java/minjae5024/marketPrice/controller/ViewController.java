@@ -6,27 +6,27 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class ViewController {
 
-    @GetMapping("/login.html")
+    @GetMapping("/login")
     public String loginPage() {
         return "login";
     }
 
-    @GetMapping("/register.html")
+    @GetMapping("/register")
     public String registerPage() {
         return "register";
     }
 
-    @GetMapping("/community.html")
+    @GetMapping("/community")
     public String communityPage() {
         return "community";
     }
 
-    @GetMapping("/post-write.html")
+    @GetMapping("/posts/new")
     public String postWritePage() {
         return "post-write";
     }
 
-    @GetMapping("/post-detail.html")
+    @GetMapping("/posts/{id}")
     public String postDetailPage() {
         return "post-detail";
     }

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -35,7 +35,7 @@
     </form>
     <p id="message" class="text-center text-sm text-red-500"></p>
     <div class="text-center">
-        <a href="/login.html" class="font-medium text-sm text-green-600 hover:text-green-500">이미 계정이 있으신가요? 로그인</a>
+        <a href="/login" class="font-medium text-sm text-green-600 hover:text-green-500">이미 계정이 있으신가요? 로그인</a>
     </div>
 </div>
 
@@ -46,7 +46,7 @@
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
         const messageEl = document.getElementById('message');
-        messageEl.textContent = ''; // 이전 메시지 초기화
+        messageEl.textContent = '';
 
         try {
             const response = await fetch('/api/auth/register', {
@@ -59,7 +59,7 @@
 
             if (response.ok) {
                 alert('회원가입에 성공했습니다! 로그인 페이지로 이동합니다.');
-                window.location.href = '/login.html';
+                window.location.href = '/login';
             } else {
                 messageEl.textContent = resultText || '회원가입에 실패했습니다.';
             }

@@ -22,11 +22,11 @@
         <a href="/" class="text-xl font-bold text-green-600 flex items-center"><i class="fas fa-seedling mr-2"></i><span>마켓 프라이스</span></a>
         <nav class="hidden md:flex flex-grow justify-center items-center space-x-8">
             <a href="/" class="text-gray-500 hover:text-green-600 transition duration-300">도매가격</a>
-            <a href="/community.html" class="text-gray-800 hover:text-green-600 transition duration-300 font-semibold border-b-2 border-green-500 pb-1">커뮤니티</a>
+            <a href="/community" class="text-gray-800 hover:text-green-600 transition duration-300 font-semibold border-b-2 border-green-500 pb-1">커뮤니티</a>
         </nav>
         <div id="auth-buttons" class="hidden items-center space-x-2">
-            <a href="/login.html" class="text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium">로그인</a>
-            <a href="/register.html" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md text-sm hover:bg-green-600">회원가입</a>
+            <a href="/login" class="text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium">로그인</a>
+            <a href="/register" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md text-sm hover:bg-green-600">회원가입</a>
         </div>
         <div id="user-info" class="hidden items-center space-x-4">
             <span id="username-display" class="font-semibold text-gray-700"></span>
@@ -51,7 +51,7 @@
 
     <section class="w-3/4 lg:w-4/5 bg-white rounded-lg shadow-sm p-6 flex flex-col relative">
         <div class="flex justify-between items-center mb-4">
-            <h1 id="board-title" class="text-2xl font-bold">게시판을 선택해주세요</h1>
+            <h1 id="board-title" class="text-2xl font-bold">전체 게시판</h1>
             <select id="sort-select" class="p-2 border rounded-md bg-white text-sm">
                 <option value="createdAt,desc">최신 순</option>
                 <option value="createdAt,asc">오래된 순</option>
@@ -70,9 +70,7 @@
                     <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">관리</th>
                 </tr>
                 </thead>
-                <tbody id="post-list" class="bg-white divide-y divide-gray-200">
-                <tr><td colspan="5" class="text-center py-10 text-gray-500">왼쪽에서 게시판을 선택해주세요.</td></tr>
-                </tbody>
+                <tbody id="post-list" class="bg-white divide-y divide-gray-200"></tbody>
             </table>
         </div>
 
@@ -90,7 +88,7 @@
             </form>
         </div>
 
-        <a href="/post-write.html" id="write-post-btn" class="absolute bottom-8 right-8 bg-green-600 text-white font-bold py-3 px-5 rounded-full shadow-lg hover:bg-green-700">
+        <a href="/posts/new" id="write-post-btn" class="absolute bottom-8 right-8 bg-green-600 text-white font-bold py-3 px-5 rounded-full shadow-lg hover:bg-green-700">
             <i class="fas fa-pen mr-2"></i>글쓰기
         </a>
     </section>
@@ -168,7 +166,7 @@
                     pageData.content.forEach(post => {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900"><a href="/post-detail.html?id=${post.id}" class="hover:text-green-600">${post.title}</a></td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900"><a href="/posts/${post.id}" class="hover:text-green-600">${post.title}</a></td>
                             <td class="px-6 py-4 text-sm text-gray-500 text-center">${post.author}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 text-center">${post.createdAt}</td>
                             <td class="px-6 py-4 text-sm text-gray-500 text-center">${post.viewCount}</td>
@@ -274,11 +272,21 @@
             if (!token) {
                 e.preventDefault();
                 alert('로그인이 필요한 기능입니다.');
-                window.location.href = '/login.html';
+                window.location.href = '/login';
             }
         });
 
         fetchMarkets();
+
+        // 초기 진입 시 '전체 게시판'을 기본 선택하고 첫 페이지 로드
+        const allPostsLink = document.getElementById('all-posts-link');
+        if (allPostsLink) {
+            document.querySelectorAll('#market-list-container a').forEach(a => a.classList.remove('bg-green-100', 'font-semibold'));
+            allPostsLink.classList.add('bg-green-100', 'font-semibold');
+        }
+        boardTitle.textContent = '전체 게시판';
+        currentMarketId = null;
+        fetchPosts();
     });
 </script>
 </body>

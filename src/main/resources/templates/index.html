@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -36,16 +36,14 @@
         </a>
         <nav class="hidden md:flex flex-grow justify-center items-center space-x-8">
             <a href="/" class="text-gray-800 hover:text-green-600 transition duration-300 font-semibold border-b-2 border-green-500 pb-1">도매가격</a>
-            <a href="/community.html" class="text-gray-500 hover:text-green-600 transition duration-300">커뮤니티</a>
+            <a href="/community" class="text-gray-500 hover:text-green-600 transition duration-300">커뮤니티</a>
         </nav>
 
-        <!-- 비로그인 시 보이는 버튼 (md:flex 클래스 제거) -->
         <div id="auth-buttons" class="hidden items-center space-x-2">
-            <a href="/login.html" class="text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition duration-300">로그인</a>
-            <a href="/register.html" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md text-sm hover:bg-green-600 transition duration-300">회원가입</a>
+            <a href="/login" class="text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition duration-300">로그인</a>
+            <a href="/register" class="bg-green-500 text-white font-semibold px-4 py-2 rounded-md text-sm hover:bg-green-600 transition duration-300">회원가입</a>
         </div>
 
-        <!-- 로그인 시 보이는 버튼 (md:flex 클래스 제거) -->
         <div id="user-info" class="hidden items-center space-x-4">
             <span id="username-display" class="font-semibold text-gray-700"></span>
             <button id="logout-button" class="text-gray-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition duration-300">로그아웃</button>
@@ -55,13 +53,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
         </button>
     </div>
-    <!-- 모바일 메뉴 구현 -->
     <div id="mobile-menu" class="hidden md:hidden bg-white border-t">
         <a href="/" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50 font-semibold">도매가격</a>
-        <a href="/community.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">커뮤니티</a>
+        <a href="/community" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">커뮤니티</a>
         <div id="mobile-auth-buttons">
-            <a href="/login.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50 border-t">로그인</a>
-            <a href="/register.html" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">회원가입</a>
+            <a href="/login" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50 border-t">로그인</a>
+            <a href="/register" class="block py-2 px-4 text-sm text-gray-700 hover:bg-gray-50">회원가입</a>
         </div>
         <div id="mobile-user-info" class="hidden border-t">
             <span id="mobile-username-display" class="block py-2 px-4 text-sm text-gray-800 font-semibold"></span>
@@ -75,10 +72,8 @@
         <div id="map" style="width:100%;height:100%;"></div>
     </div>
 
-    <!-- info-panel 구조 수정 -->
     <div id="info-panel">
         <div id="product-list-container" class="p-4">
-            <!-- Controls Section -->
             <div id="controls" class="mb-4">
                 <div class="text-center mb-4">
                     <h2 id="market-name" class="text-2xl font-bold text-gray-800">시장을 선택해주세요</h2>
@@ -114,7 +109,6 @@
                 </form>
             </div>
 
-            <!-- Results Table -->
             <div id="product-table-wrapper" class="overflow-x-auto mt-4">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-200 sticky top-0">
@@ -135,7 +129,7 @@
 
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=2559b52896ebbc8d405dc2891d26905d&autoload=false"></script>
 <script>
-    // JWT 토큰에서 payload를 디코딩하는 함수
+
     function parseJwt(token) {
         try {
             const base64Url = token.split('.')[1];
@@ -150,29 +144,27 @@
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-        // 로그인 상태 확인 및 UI 변경 (수정된 부분)
         const token = localStorage.getItem('jwt-token');
         const authButtons = document.getElementById('auth-buttons');
         const userInfo = document.getElementById('user-info');
 
         if (token) {
-            // 로그인 상태일 때
             const payload = parseJwt(token);
             if (payload) {
                 document.getElementById('username-display').textContent = `${payload.sub}님`;
             }
             authButtons.classList.add('hidden');
-            authButtons.classList.remove('md:flex'); // flex 속성 제거
+            authButtons.classList.remove('md:flex');
 
             userInfo.classList.remove('hidden');
-            userInfo.classList.add('md:flex'); // flex 속성 추가
+            userInfo.classList.add('md:flex');
         } else {
-            // 로그아웃 상태일 때
+
             authButtons.classList.remove('hidden');
-            authButtons.classList.add('md:flex'); // flex 속성 추가
+            authButtons.classList.add('md:flex');
 
             userInfo.classList.add('hidden');
-            userInfo.classList.remove('md:flex'); // flex 속성 제거
+            userInfo.classList.remove('md:flex');
         }
 
         document.getElementById('logout-button')?.addEventListener('click', () => {
@@ -181,7 +173,7 @@
             window.location.reload();
         });
 
-        // 카카오맵 및 나머지 스크립트
+
         kakao.maps.load(function() {
             const mapContainer = document.getElementById('map');
             const mapOption = { center: new kakao.maps.LatLng(36.5, 127.5), level: 12 };
@@ -234,7 +226,7 @@
             function selectMarket(marketId, marketName) {
                 currentMarketId = marketId;
                 marketNameEl.textContent = marketName;
-                marketHelperTextEl.style.display = 'none'; // 보조 텍스트 숨기기
+                marketHelperTextEl.style.display = 'none';
             }
 
             function fetchProducts() {
