@@ -54,6 +54,6 @@ jobs:
           script: |
             cd /home/${{ secrets.HOME_USERNAME }}/marketprice
             mv -f marketPrice-0.0.1-SNAPSHOT.jar marketprice.jar
-            sudo chown ${{ secrets.HOME_USERNAME }}:${{ secrets.HOME_USERNAME }} marketprice.jar
-            sudo chmod +x marketprice.jar
+            chown ${{ secrets.HOME_USERNAME }}:${{ secrets.HOME_USERNAME }} marketprice.jar
+            chmod +x marketprice.jar
             sudo systemctl restart marketprice.service
