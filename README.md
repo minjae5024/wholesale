@@ -37,7 +37,7 @@
 
 - **Backend**: `Java`, `Spring Boot`, `Spring Security`, `Spring Data JPA`
 - **Database**: `MySQL`, `QueryDSL`, `Redis`
-- **DevOps**: `GitHub Actions`, `AWS EC2`, `AWS RDS`
+- **DevOps**: `GitHub Actions`, `~~AWS EC2~~`, `~~AWS RDS~~`
 - **Test**: `JUnit 5`, `Mockito`, `Jmeter`
 
 ## 5. 전체 시스템 아키텍처
