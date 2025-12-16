@@ -11,8 +11,8 @@
 
 ###  **프로젝트 URL & API 문서**
 
-- **[프로젝트 URL](http://3.34.46.39:8080)**
-- **[API 문서 (Swagger)](http://3.34.46.39:8080/swagger-ui/index.html)**
+- **[프로젝트 URL](https://marketprice.minjae5024.store)**
+- **[API 문서 (Swagger)](https://marketprice.minjae5024.store/swagger-ui/index.html)**
 
 ---
 
