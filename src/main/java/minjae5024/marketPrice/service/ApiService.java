@@ -2,14 +2,17 @@ package minjae5024.marketPrice.service;
 
 import minjae5024.marketPrice.dto.ApiResponseDto;
 import minjae5024.marketPrice.dto.PriceItemDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.StringJoiner;
 
+@Slf4j
 @Service
 public class ApiService {
 
@@ -58,6 +61,13 @@ public class ApiService {
                 .uri(fullUrl)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<ApiResponseDto<PriceItemDto>>() {})
-                .onErrorResume(e -> Mono.just(new ApiResponseDto<>()));
+                .doOnError(e -> log.error("API call failed for URL: {}. Error: {}", fullUrl, e.getMessage()))
+                .retryWhen(reactor.util.retry.Retry.backoff(3, Duration.ofSeconds(1))
+                        .doBeforeRetry(retrySignal -> log.warn("Retrying API call for URL: {}. Retry count: {}", fullUrl, retrySignal.totalRetries() + 1))
+                )
+                .onErrorResume(e -> {
+                    log.error("API call failed after retries for URL: {}. Returning empty response.", fullUrl, e);
+                    return Mono.just(new ApiResponseDto<>());
+                });
     }
 }

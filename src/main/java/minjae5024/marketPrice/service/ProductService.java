@@ -12,6 +12,7 @@ import minjae5024.marketPrice.repository.ProductCodeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -43,7 +44,7 @@ public class ProductService {
         String queryDateStr = StringUtils.hasText(date) ? date.replace("-", "") : LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         LocalDate queryDate = LocalDate.parse(queryDateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        // 1. DB에서 먼저 조회
+        
         List<DailyPrice> dbResults;
         if (StringUtils.hasText(productName)) {
             dbResults = dailyPriceRepository.findByMrktCdAndExamineDateAndPrdlstNmContaining(mrktCd, queryDate, productName);
@@ -60,12 +61,12 @@ public class ProductService {
             }
         }
 
-        // 2. DB에 데이터가 있으면 변환 후 반환
+        
         if (!dbResults.isEmpty()) {
             return dbResults.stream().map(this::convertToDto).collect(Collectors.toList());
         }
 
-        // 3. DB에 없으면 API 호출 (Fallback)
+        
         return fetchFromApiAndSave(mrktCd, category, productName, queryDateStr);
     }
 
@@ -76,7 +77,10 @@ public class ProductService {
             
             String productCode = foundCodes.get(0).getPrdlstCd();
             ApiResponseDto<PriceItemDto> response = apiService.fetchPriceDataByProductCode(productCode, mrktCd, queryDate).block();
-            return isSuccessfulResponse(response) ? response.getResultData().getRow() : Collections.emptyList();
+            List<PriceItemDto> rows = isSuccessfulResponse(response) ? response.getResultData().getRow() : Collections.emptyList();
+            
+            savePrices(rows, mrktCd, queryDate, null);
+            return rows;
         } else {
             return getProductsByCategoryFromApi(category, mrktCd, queryDate);
         }
@@ -95,11 +99,61 @@ public class ProductService {
         }
 
         return categoriesToFetch.parallelStream()
-                .map(pc -> apiService.fetchPriceDataByCategory(pc.getApiCode(), mrktCd, queryDate).block())
-                .filter(this::isSuccessfulResponse)
-                .flatMap(response -> response.getResultData().getRow().stream())
+                .map(pc -> {
+                    ApiResponseDto<PriceItemDto> response = apiService.fetchPriceDataByCategory(pc.getApiCode(), mrktCd, queryDate).block();
+                    List<PriceItemDto> rows = isSuccessfulResponse(response) ? response.getResultData().getRow() : Collections.emptyList();
+                    savePrices(rows, mrktCd, queryDate, pc.getApiCode());
+                    return rows;
+                })
+                .flatMap(List::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void savePrices(List<PriceItemDto> rows, String mrktCd, String queryDateStr, String categoryCode) {
+        if (rows == null || rows.isEmpty()) return;
+
+        LocalDate queryDate = LocalDate.parse(queryDateStr, DateTimeFormatter.ofPattern("yyyyMMdd"));
+        
+        List<DailyPrice> pricesToSave = rows.stream()
+                .map(item -> {
+                    DailyPrice existing = dailyPriceRepository.findByMrktCdAndExamineDateAndPrdlstNmAndSpciesNmAndGradNm(
+                            mrktCd, queryDate, item.getPrdlstNm(), item.getSpciesNm(), item.getGradNm()
+                    ).orElse(null);
+
+                    if (existing != null) {
+                        existing.setAmt(parseAmount(item.getAmt()));
+                        existing.setExaminUnit(item.getExaminUnit());
+                        if (categoryCode != null) {
+                            existing.setCategoryCode(categoryCode);
+                        }
+                        return existing;
+                    } else {
+                        return new DailyPrice(
+                                mrktCd,
+                                queryDate,
+                                item.getPrdlstNm(),
+                                item.getSpciesNm(),
+                                item.getGradNm(),
+                                item.getExaminUnit(),
+                                parseAmount(item.getAmt()),
+                                categoryCode
+                        );
+                    }
+                })
+                .collect(Collectors.toList());
+
+        dailyPriceRepository.saveAll(pricesToSave);
+    }
+
+    private Long parseAmount(String amt) {
+        if (amt == null) return 0L;
+        try {
+            return Long.parseLong(amt.replace(",", ""));
+        } catch (NumberFormatException e) {
+            return 0L;
+        }
     }
 
     private PriceItemDto convertToDto(DailyPrice dailyPrice) {

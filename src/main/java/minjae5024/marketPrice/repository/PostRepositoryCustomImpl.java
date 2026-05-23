@@ -10,10 +10,11 @@ import minjae5024.marketPrice.entity.Post;
 import minjae5024.marketPrice.entity.QMarket;
 import minjae5024.marketPrice.entity.QPost;
 import minjae5024.marketPrice.entity.QUser;
+import com.querydsl.jpa.impl.JPAQuery;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
@@ -42,16 +43,18 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom {
                 .orderBy(getOrderSpecifiers(pageable.getSort())) 
                 .fetch();
 
-        long total = queryFactory
+        JPAQuery<Long> countQuery = queryFactory
                 .select(post.count())
                 .from(post)
                 .where(
                         marketIdEq(marketId),
                         searchPredicate(searchType, keyword)
-                )
-                .fetchOne();
+                );
 
-        return new PageImpl<>(results, pageable, total);
+        return PageableExecutionUtils.getPage(results, pageable, () -> {
+            Long count = countQuery.fetchOne();
+            return count != null ? count : 0L;
+        });
     }
 
     private BooleanExpression marketIdEq(Long marketId) {

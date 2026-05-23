@@ -18,7 +18,7 @@ public class PriceBatchScheduler {
     private final Job syncPriceJob;
     private final Job cleanupJob;
 
-    // 매일 새벽 4시에 실행
+    
     @Scheduled(cron = "0 0 4 * * *")
     public void runSyncPriceJob() {
         try {
@@ -34,7 +34,7 @@ public class PriceBatchScheduler {
         }
     }
 
-    // 매월 1일 새벽 5시에 실행
+    
     @Scheduled(cron = "0 0 5 1 * *")
     public void runCleanupJob() {
         try {

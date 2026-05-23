@@ -31,6 +31,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -110,15 +111,24 @@ public class PriceBatchConfig {
                 return null;
             }
 
+            
+            List<DailyPrice> existingPrices = dailyPriceRepository.findByMrktCdAndExamineDateAndCategoryCode(
+                    task.mrktCd,
+                    LocalDate.now(),
+                    task.category.getApiCode()
+            );
+
+            Map<String, DailyPrice> existingPriceMap = existingPrices.stream()
+                    .collect(Collectors.toMap(
+                            p -> p.getPrdlstNm() + "_" + (p.getSpciesNm() != null ? p.getSpciesNm() : "") + "_" + (p.getGradNm() != null ? p.getGradNm() : ""),
+                            p -> p,
+                            (p1, p2) -> p1
+                    ));
+
             return response.getResultData().getRow().stream()
                     .map(item -> {
-                        DailyPrice existingPrice = dailyPriceRepository.findByMrktCdAndExamineDateAndPrdlstNmAndSpciesNmAndGradNm(
-                                task.mrktCd,
-                                LocalDate.now(),
-                                item.getPrdlstNm(),
-                                item.getSpciesNm(),
-                                item.getGradNm()
-                        ).orElse(null);
+                        String key = item.getPrdlstNm() + "_" + (item.getSpciesNm() != null ? item.getSpciesNm() : "") + "_" + (item.getGradNm() != null ? item.getGradNm() : "");
+                        DailyPrice existingPrice = existingPriceMap.get(key);
 
                         if (existingPrice != null) {
                             existingPrice.setAmt(parseAmount(item.getAmt()));
